@@ -2308,55 +2308,10 @@ All dependencies are pre-configured and version-locked for compatibility.
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Test your changes thoroughly
-4. Submit a pull request
-
----
-
 ## License
 
 This documentation is for MOLA SLAM configuration on ROS2 Humble.  
 MOLA SLAM is licensed under BSD-3-Clause. See individual packages for details.
-
----
-
-## Changelog
-
-**Version 1.7 (December 2024)**
-- **NEW FEATURE:** Added map save service call documentation (`/map_save`)
-- Service call allows saving maps anytime during operation (no need to stop)
-- Updated Quick Start with service call method
-- Updated all examples to use service call
-- Added to Command Reference and Best Practices
-- Service creates .simplemap, .mm, and .tum files in one command
-
-**Version 1.6 (December 2024)**
-- **CRITICAL FIX:** Corrected workspace structure - mola_bringup is inside MOLA-SLAM/src/
-- Updated all file paths throughout documentation
-
-**Version 1.5 (December 2024)**
-- Complete rewrite based on actual launch files
-- Added dedicated section explaining two launch files (mapping vs localization)
-
-**Version 1.4 (December 2024)**
-- Added comprehensive Advanced Usage section
-
-**Version 1.3 (December 2024)**
-- Updated for packaged distribution
-
-**Version 1.2 (December 2024)**
-- Added mrpt_msgs build from source instructions
-
-**Version 1.1 (December 2024)**
-- Updated with official MOLA documentation
-
-**Version 1.0 (December 2024)**
-- Initial comprehensive guide
 
 ---
 
