@@ -1,7 +1,0 @@
-# test3b
----
-foo: "bar"
-config4:
-  $include{d2/test4.yaml}
-config2:
-  $include{../test2.yaml}
