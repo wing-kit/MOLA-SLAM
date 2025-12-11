@@ -1,6 +1,8 @@
 # MOLA SLAM Complete Guide
 **Comprehensive Configuration and Usage Guide for ROS2 Humble on Ubuntu 22.04**
 
+<div align="center">
+
 ![ROS2](https://img.shields.io/badge/ROS2-Humble-blue?style=for-the-badge&logo=ros&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -12,8 +14,7 @@
 **Primary Hardware:** Livox MID-360 LiDAR  
 **Focus:** GICP/ICP SLAM for Mapping and Localization  
 **Official Documentation:** https://docs.mola-slam.org/latest/
-
----
+</div>
 
 ## Table of Contents
 
@@ -53,23 +54,36 @@ source /opt/ros/humble/setup.bash
 ros2 --version
 ```
 
-### Install Colcon Build Tools
+### Important: Source ROS2 Environment
 
-MOLA uses `colcon` for building. Despite ROS 2 integration, a full ROS 2 installation is not required - only `colcon` and `ament`.
+Before installing dependencies or building, ensure ROS2 Humble is sourced:
 
 ```bash
-sudo apt update
-sudo apt install python3-colcon-common-extensions
+source /opt/ros/humble/setup.bash
 ```
 
-### Install MRPT Core Dependencies
+**Add to .bashrc for automatic sourcing:**
+```bash
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
 
-The workspace includes pre-configured MRPT packages (v2.14.16) and messages (v0.5.0). Install only the system dependencies:
+### Install All Dependencies
+
+The workspace includes pre-configured MRPT packages (v2.14.16) and messages (v0.5.0) to build from source.
+
+**⚠️ IMPORTANT:** Do NOT install `ros-humble-mrpt-*` packages from apt! The workspace includes MRPT source code and will build it from source. Installing both will cause conflicts.
+
+Install all required system dependencies:
 
 ```bash
-# MRPT core dependencies
-sudo apt install \
-  build-essential cmake \
+# Update package list
+sudo apt update
+
+# Install ALL dependencies in one command
+sudo apt install -y \
+  build-essential cmake pkg-config \
+  python3-colcon-common-extensions \
   libwxgtk3.0-gtk3-dev libwxgtk-media3.0-gtk3-dev \
   libglut-dev freeglut3-dev libglu1-mesa-dev \
   libopencv-dev \
@@ -78,21 +92,65 @@ sudo apt install \
   libassimp-dev \
   liboctomap-dev \
   libtbb-dev \
-  libpcap-dev
-
-# MOLA dependencies
-sudo apt install \
+  libpcap-dev \
+  libjpeg-dev \
+  libglfw3-dev \
+  libxrandr-dev \
+  libxxf86vm-dev \
+  libfreenect-dev \
+  libopenni2-dev \
+  libudev-dev \
+  libusb-1.0-dev \
+  pybind11-dev \
+  python3-pip \
+  libcli11-dev \
+  libtinyxml2-dev \
+  ffmpeg libavcodec-dev libavformat-dev libswscale-dev \
   libgtsam-dev \
   libyaml-cpp-dev \
-  ros-humble-rviz2
-
-# mola_bringup dependencies
-sudo apt install \
+  libboost-serialization-dev \
+  libboost-system-dev \
+  libboost-filesystem-dev \
+  libboost-thread-dev \
+  libboost-program-options-dev \
+  libboost-date-time-dev \
+  libboost-timer-dev \
+  libboost-chrono-dev \
+  libboost-regex-dev \
+  zlib1g-dev \
   python3-matplotlib \
   python3-numpy \
   python3-tk \
-  ros-humble-sensor-msgs-py
+  ros-humble-ament-cmake \
+  ros-humble-ament-cmake-gtest \
+  ros-humble-ament-cmake-python \
+  ros-humble-rclcpp \
+  ros-humble-rclpy \
+  ros-humble-rosidl-default-generators \
+  ros-humble-rosidl-default-runtime \
+  ros-humble-geometry-msgs \
+  ros-humble-sensor-msgs \
+  ros-humble-sensor-msgs-py \
+  ros-humble-nav-msgs \
+  ros-humble-std-msgs \
+  ros-humble-action-msgs \
+  ros-humble-stereo-msgs \
+  ros-humble-tf2 \
+  ros-humble-tf2-ros \
+  ros-humble-tf2-geometry-msgs \
+  ros-humble-tf2-msgs \
+  ros-humble-cv-bridge \
+  ros-humble-rosbag2-cpp \
+  ros-humble-rosbag2-storage \
+  ros-humble-rviz2
 ```
+
+**Note:** This installs 76+ packages including:
+- **Build tools**: cmake, colcon, ament
+- **MRPT dependencies**: wxWidgets, OpenGL, OpenCV, sensor drivers, CLI11 parser
+- **MOLA dependencies**: GTSAM, YAML, Boost libraries
+- **ROS2 packages**: rclcpp/rclpy, message types, TF2, cv_bridge
+- **Python tools**: matplotlib, numpy, tkinter
 
 ### Setup Workspace
 
@@ -261,7 +319,8 @@ ls -lh ~/mola_ws/map/my_building.*
 **If you used automatic save (Method 2):**
 ```bash
 # Convert simplemap to metric map (faster for localization)
-sm-cli export-mm final_map.simplemap output_map.mm
+sm2mm -i final_map.simplemap -o output_map.mm \
+  --pipeline $(ros2 pkg prefix mp2p_icp)/share/mp2p_icp/demos/sm2mm_pointcloud_voxelize.yaml
 
 # Create map directory and move maps there
 mkdir -p ~/mola_ws/map
@@ -919,12 +978,19 @@ ros2 launch mola_bringup mola_slam_launch.py
 
 ```bash
 # Convert simplemap to metric map for faster localization:
-sm-cli export-mm final_map.simplemap output_map.mm
+sm2mm -i final_map.simplemap -o output_map.mm \
+  --pipeline $(ros2 pkg prefix mp2p_icp)/share/mp2p_icp/demos/sm2mm_pointcloud_voxelize.yaml
 
 # Verify:
 sm-cli info final_map.simplemap
 ls -lh output_map.mm
 ```
+
+**Note:** The `sm2mm` tool uses a YAML pipeline configuration file. Available pipelines in `mp2p_icp/demos/`:
+- `sm2mm_pointcloud_voxelize.yaml` - Voxelized point cloud (recommended, balanced)
+- `sm2mm_bonxai_voxelmap.yaml` - Bonxai voxel map (memory efficient)
+- `sm2mm_bonxai_voxelmap_gridmap.yaml` - Voxel + 2D grid map
+- See [sm2mm documentation](https://docs.mola-slam.org/latest/app_sm2mm.html) for details
 
 ### View Map
 
@@ -1284,7 +1350,8 @@ ros2 service call /map_save mola_msgs/srv/MapSave \
   "map_path: '/home/katana/mola_ws/map/my_map'"
 
 # Convert:
-sm-cli export-mm final_map.simplemap output_map.mm
+sm2mm -i final_map.simplemap -o output_map.mm \
+  --pipeline $(ros2 pkg prefix mp2p_icp)/share/mp2p_icp/demos/sm2mm_pointcloud_voxelize.yaml
 
 # View:
 mm-viewer output_map.mm
@@ -1384,7 +1451,8 @@ ros2 service call /map_save mola_msgs/srv/MapSave \
 
 # Or if using automatic save (after Ctrl+C):
 # Convert simplemap to metric map
-sm-cli export-mm final_map.simplemap output_map.mm
+sm2mm -i final_map.simplemap -o output_map.mm \
+  --pipeline $(ros2 pkg prefix mp2p_icp)/share/mp2p_icp/demos/sm2mm_pointcloud_voxelize.yaml
 
 # Move to organized location
 mkdir -p ~/mola_ws/map
@@ -2185,9 +2253,10 @@ ros2 topic info /livox/lidar_filtered
     ros2 service call /map_save mola_msgs/srv/MapSave \
       "map_path: '/home/katana/mola_ws/map/building_name'"
     # All files created automatically (.simplemap, .mm, .tum)
-    
+
     # If using automatic save:
-    sm-cli export-mm final_map.simplemap output_map.mm
+    sm2mm -i final_map.simplemap -o output_map.mm \
+      --pipeline $(ros2 pkg prefix mp2p_icp)/share/mp2p_icp/demos/sm2mm_pointcloud_voxelize.yaml
     mv *.simplemap *.mm ~/mola_ws/map/
     ```
 
@@ -2229,21 +2298,33 @@ ros2 topic info /livox/lidar_filtered
 
 ## Important Notes
 
-- **Package Structure:** This repository includes pre-configured MRPT (v2.14.16) and mrpt_msgs (v0.5.0)
-- **Custom Package Location:** mola_bringup is located at `~/mola_ws/src/MOLA-SLAM/src/mola_bringup/`
-- **Two Launch Files:** mola_slam_launch.py (mapping) and mola_localize_launch.py (localization)
-- **Launch File Paths:** mola_localize_launch.py contains hardcoded map paths that **MUST be updated**
-- **Edit Launch File:** `nano ~/mola_ws/src/MOLA-SLAM/src/mola_bringup/launch/mola_localize_launch.py`
+### Build & Dependencies
+- **MRPT Built from Source:** This workspace includes MRPT (v2.14.16) and mrpt_msgs (v0.5.0) to build from source
+- **⚠️ DO NOT install ros-humble-mrpt-\* from apt:** Installing both source and apt versions will cause conflicts
+- **76+ Dependencies Required:** Use the complete dependency install command in the Installation section
+- **ROS2 Must Be Sourced:** Run `source /opt/ros/humble/setup.bash` before building
+- **Build Order Critical:** Always build: mrpt_msgs → mrpt_libs → mola packages → mola_bringup
+- **Build Time:** First build takes 20-40 minutes (MRPT compilation is intensive)
+- **No rosdep:** All dependencies installed manually via apt (listed in Installation section)
+
+### Package Structure & Paths
+- **Actual Workspace Location:** `/home/katana/Desktop/github_clone/MOLA-SLAM/mola_ws/` (not `~/mola_ws/`)
+- **mola_bringup Location:** `mola_ws/src/MOLA-SLAM/src/mola_bringup/`
+- **Launch Files:** `mola_slam_launch.py` (mapping) and `mola_localize_launch.py` (localization)
+- **Script Locations:** `mola_bringup/mola_bringup/filterpass.py` and `plot_lidar_trajectory.py`
+
+### Launch File Configuration
+- **Hardcoded Map Paths:** `mola_localize_launch.py` contains example paths that **MUST be updated**
+- **Edit Before Use:** `nano mola_ws/src/MOLA-SLAM/src/mola_bringup/launch/mola_localize_launch.py`
+- **Use Absolute Paths:** Not `~/` syntax (Python doesn't expand it)
 - **Localization Behavior:** MOLA starts **INACTIVE** and requires initial pose via GUI button
-- **No Cloning Required:** MRPT packages are already included - no need to clone separately
-- **Build Order:** Always build mrpt_msgs → mrpt_ros → mola (includes mola_bringup)
-- **No rosdep:** Dependencies installed manually since MRPT is built from source
-- **Workspace Location:** Default is `~/mola_ws` - adjust paths as needed
-- **Output Files:** Mapping produces `.simplemap` and `.tum` files only (no PCD by default)
 - **Filtered Topic:** Both launch files use `/livox/lidar_filtered` as input to MOLA
+
+### System Behavior
+- **Output Files:** Mapping produces `.simplemap` and `.tum` files (no PCD by default)
 - **State Estimator:** Recommended for smoother trajectories and better sensor fusion
 - **GICP vs ICP:** GICP = higher accuracy (outdoor), ICP = faster (indoor)
-- **REP105:** Enabled by default for standard ROS2 navigation compatibility
+- **REP105 Compliance:** Enabled by default for standard ROS2 navigation compatibility
 - **Frame Names:** Ensure frame names match your URDF/robot configuration
 - **GUI Auto-enables Planar Mode:** plot_lidar_trajectory automatically enables planar motion at startup
 

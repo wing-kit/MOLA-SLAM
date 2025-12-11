@@ -27,10 +27,8 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  scripts/filterpass.py
-
-  # scripts/intensity_passthrough_filter.py
-  scripts/plot_lidar_trajectory.py
+  mola_bringup/filterpass.py
+  mola_bringup/plot_lidar_trajectory.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
