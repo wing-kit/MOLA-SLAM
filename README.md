@@ -6,7 +6,7 @@
 ![ROS2](https://img.shields.io/badge/ROS2-Humble-blue?style=for-the-badge&logo=ros&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![MOLA](https://img.shields.io/badge/MOLA-v2.2.1-00C853?style=for-the-badge)
+![MOLA](https://img.shields.io/badge/MOLA-v2.2.0-00C853?style=for-the-badge)
 ![MRPT](https://img.shields.io/badge/MRPT-2.14.16-FF6F00?style=for-the-badge)
 ![mrpt_msgs](https://img.shields.io/badge/mrpt__msgs-0.5.0-FF6F00?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-BSD--3-blue?style=for-the-badge)
@@ -19,6 +19,7 @@
 ## Table of Contents
 
 - [Installation](#installation)
+  - [Quick Installation](#quick-installation)
 - [Quick Start](#quick-start)
 - [mola_bringup Launch Files](#mola_bringup-launch-files)
 - [System Overview](#system-overview)
@@ -42,6 +43,91 @@
 ---
 
 ## Installation
+
+### Quick Installation
+
+```bash
+# 1. Source ROS2 Humble
+source /opt/ros/humble/setup.bash
+
+# 2. Clone the repository
+cd ~
+git clone https://github.com/Whan000/MOLA-SLAM.git
+cd MOLA-SLAM/mola_ws
+
+# 3. Install all dependencies
+sudo apt update
+sudo apt install -y \
+  build-essential cmake pkg-config \
+  python3-colcon-common-extensions \
+  libwxgtk3.0-gtk3-dev libwxgtk-media3.0-gtk3-dev \
+  libopencv-dev \
+  libeigen3-dev \
+  libsuitesparse-dev \
+  libassimp-dev \
+  liboctomap-dev \
+  libtbb-dev \
+  libpcap-dev \
+  libjpeg-dev \
+  libglfw3-dev \
+  libxrandr-dev \
+  libxxf86vm-dev \
+  libfreenect-dev \
+  libopenni2-dev \
+  libudev-dev \
+  pybind11-dev \
+  python3-pip \
+  libcli11-dev \
+  libtinyxml2-dev \
+  ffmpeg libavcodec-dev libavformat-dev libswscale-dev \
+  libyaml-cpp-dev \
+  libboost-serialization-dev \
+  libboost-system-dev \
+  libboost-filesystem-dev \
+  libboost-thread-dev \
+  libboost-program-options-dev \
+  libboost-date-time-dev \
+  libboost-timer-dev \
+  libboost-chrono-dev \
+  libboost-regex-dev \
+  zlib1g-dev \
+  python3-matplotlib \
+  python3-numpy \
+  python3-tk \
+  ros-humble-ament-cmake \
+  ros-humble-ament-cmake-gtest \
+  ros-humble-ament-cmake-python \
+  ros-humble-rclcpp \
+  ros-humble-rclpy \
+  ros-humble-rosidl-default-generators \
+  ros-humble-rosidl-default-runtime \
+  ros-humble-geometry-msgs \
+  ros-humble-sensor-msgs \
+  ros-humble-sensor-msgs-py \
+  ros-humble-nav-msgs \
+  ros-humble-std-msgs \
+  ros-humble-action-msgs \
+  ros-humble-stereo-msgs \
+  ros-humble-tf2 \
+  ros-humble-tf2-ros \
+  ros-humble-tf2-geometry-msgs \
+  ros-humble-tf2-msgs \
+  ros-humble-cv-bridge \
+  ros-humble-rosbag2-cpp \
+  ros-humble-rosbag2-storage \
+  ros-humble-rviz2
+
+# 4. Build the workspace
+colcon build --symlink-install --cmake-args -DGTSAM_USE_SYSTEM_EIGEN=ON -DCMAKE_BUILD_TYPE=Release
+
+# 5. Source the workspace
+source install/setup.bash
+
+# 6. (Optional) Add to .bashrc for permanent sourcing
+echo "source ~/MOLA-SLAM/mola_ws/install/setup.bash" >> ~/.bashrc
+```
+
+---
 
 ### Prerequisites
 
@@ -85,7 +171,6 @@ sudo apt install -y \
   build-essential cmake pkg-config \
   python3-colcon-common-extensions \
   libwxgtk3.0-gtk3-dev libwxgtk-media3.0-gtk3-dev \
-  libglut-dev freeglut3-dev libglu1-mesa-dev \
   libopencv-dev \
   libeigen3-dev \
   libsuitesparse-dev \
@@ -100,13 +185,11 @@ sudo apt install -y \
   libfreenect-dev \
   libopenni2-dev \
   libudev-dev \
-  libusb-1.0-dev \
   pybind11-dev \
   python3-pip \
   libcli11-dev \
   libtinyxml2-dev \
   ffmpeg libavcodec-dev libavformat-dev libswscale-dev \
-  libgtsam-dev \
   libyaml-cpp-dev \
   libboost-serialization-dev \
   libboost-system-dev \
@@ -145,10 +228,10 @@ sudo apt install -y \
   ros-humble-rviz2
 ```
 
-**Note:** This installs 76+ packages including:
+**Note:** This installs 75+ packages including:
 - **Build tools**: cmake, colcon, ament
 - **MRPT dependencies**: wxWidgets, OpenGL, OpenCV, sensor drivers, CLI11 parser
-- **MOLA dependencies**: GTSAM, YAML, Boost libraries
+- **MOLA dependencies**: YAML, Boost libraries (GTSAM is built from source in workspace)
 - **ROS2 packages**: rclcpp/rclpy, message types, TF2, cv_bridge
 - **Python tools**: matplotlib, numpy, tkinter
 
@@ -190,7 +273,7 @@ Your workspace should have this structure:
 │   │       │   │   ├── mola_slam_launch.py
 │   │       │   │   └── mola_localize_launch.py
 │   │       │   ├── package.xml
-│   │       │   └── setup.py
+│   │       │   └── CMakeLists.txt
 │   │       ├── mola_common/
 │   │       ├── mola_imu_preintegration/
 │   │       ├── mola_lidar_odometry/
@@ -214,20 +297,7 @@ Build in the correct order for dependency resolution:
 cd ~/mola_ws
 
 # Step 1: Build MRPT messages first
-colcon build --packages-select mrpt_msgs --symlink-install
-
-# Step 2: Build MRPT libraries
-colcon build --packages-select \
-  mrpt_libbase mrpt_libposes mrpt_libobs mrpt_libmaps \
-  mrpt_libmath mrpt_libopengl mrpt_libgui mrpt_libtclap \
-  mrpt_libslam mrpt_libnav mrpt_libhwdrivers mrpt_libapps mrpt_apps \
-  --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
-# Step 3: Build all MOLA packages
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
-# Step 4: Build mola_bringup
-colcon build --packages-select mola_bringup --symlink-install
+colcon build --symlink-install --cmake-args -DGTSAM_USE_SYSTEM_EIGEN=ON -DCMAKE_BUILD_TYPE=Release 
 
 # Source the workspace
 source install/setup.bash
@@ -433,7 +503,7 @@ ros2 launch mola_bringup mola_slam_launch.py
 **Usage:**
 ```bash
 # 1. Edit launch file with your map paths
-nano ~/mola_ws/src/mola_bringup/launch/mola_localize_launch.py
+nano ~/mola_ws/src/MOLA-SLAM/src/mola_bringup/launch/mola_localize_launch.py
 
 # 2. Update lines 11-12 to your maps:
 mm_map = '/home/YOUR_USERNAME/mola_ws/map/YOUR_MAP.mm'
@@ -504,7 +574,7 @@ MOLA (Modular Optimization framework for Localization and mApping) provides LiDA
 ### File Structure
 
 ```
-~/mola_ws/src/MOLA-SLAM/mola_lidar_odometry/
+~/mola_ws/src/MOLA-SLAM/src/mola_lidar_odometry/
 │
 ├── pipelines/                              # Algorithm configurations
 │   ├── lidar3d-gicp-katana.yaml           # GICP pipeline (recommended)
@@ -554,7 +624,7 @@ ros2 launch mola_bringup mola_slam_launch.py
 
 ```bash
 # FIRST: Update map paths in launch file!
-nano ~/mola_ws/src/mola_bringup/launch/mola_localize_launch.py
+nano ~/mola_ws/src/MOLA-SLAM/src/mola_bringup/launch/mola_localize_launch.py
 
 # Then launch:
 ros2 launch mola_bringup mola_localize_launch.py
@@ -1588,7 +1658,7 @@ The `mola_bringup` package includes:
 │   ├── mola_slam_launch.py              # SLAM workflow (mapping)
 │   └── mola_localize_launch.py          # Localization workflow
 ├── package.xml
-├── setup.py
+├── CMakeLists.txt
 └── README.md
 ```
 
@@ -2048,7 +2118,7 @@ mkdir -p mola_bringup/resource
 # - mola_bringup/launch/mola_slam_launch.py
 # - mola_bringup/launch/mola_localize_launch.py
 # - mola_bringup/package.xml
-# - mola_bringup/setup.py
+# - mola_bringup/CMakeLists.txt
 # - mola_bringup/resource/mola_bringup (empty file)
 
 # Make executables
@@ -2300,18 +2370,19 @@ ros2 topic info /livox/lidar_filtered
 
 ### Build & Dependencies
 - **MRPT Built from Source:** This workspace includes MRPT (v2.14.16) and mrpt_msgs (v0.5.0) to build from source
-- **⚠️ DO NOT install ros-humble-mrpt-\* from apt:** Installing both source and apt versions will cause conflicts
-- **76+ Dependencies Required:** Use the complete dependency install command in the Installation section
+- **GTSAM Built from Source:** GTSAM factor graph library is included in the workspace (do NOT install libgtsam-dev from apt)
+- **DO NOT install ros-humble-mrpt-\* from apt:** Installing both source and apt versions will cause conflicts
+- **75+ Dependencies Required:** Use the complete dependency install command in the Installation section
 - **ROS2 Must Be Sourced:** Run `source /opt/ros/humble/setup.bash` before building
-- **Build Order Critical:** Always build: mrpt_msgs → mrpt_libs → mola packages → mola_bringup
-- **Build Time:** First build takes 20-40 minutes (MRPT compilation is intensive)
+- **Build Order Critical:** Always build: gtsam → mrpt_msgs → mrpt_libs → mola packages → mola_bringup
+- **Build Time:** First build takes 30-60 minutes (GTSAM and MRPT compilation is intensive)
 - **No rosdep:** All dependencies installed manually via apt (listed in Installation section)
 
 ### Package Structure & Paths
-- **Actual Workspace Location:** `/home/katana/Desktop/github_clone/MOLA-SLAM/mola_ws/` (not `~/mola_ws/`)
 - **mola_bringup Location:** `mola_ws/src/MOLA-SLAM/src/mola_bringup/`
 - **Launch Files:** `mola_slam_launch.py` (mapping) and `mola_localize_launch.py` (localization)
 - **Script Locations:** `mola_bringup/mola_bringup/filterpass.py` and `plot_lidar_trajectory.py`
+- **Navigation Packages:** mrpt_navigation (pf_localization, reactivenav2d, map_server) and mrpt_path_planning included for autonomous navigation capabilities
 
 ### Launch File Configuration
 - **Hardcoded Map Paths:** `mola_localize_launch.py` contains example paths that **MUST be updated**
@@ -2338,26 +2409,78 @@ This package includes:
 ~/mola_ws/src/
 ├── MOLA-SLAM/
 │   └── src/
-│       ├── mola/                      # All MOLA core packages
-│       ├── mola_bringup/              # 🎯 YOUR CUSTOM PACKAGE (USE THIS!)
+│       ├── mola/                          # MOLA metapackage (v2.2.0)
+│       │
+│       ├── mola_bringup/                  # Custom launch package for SLAM workflows
 │       │   ├── mola_bringup/
 │       │   │   ├── filterpass.py
 │       │   │   └── plot_lidar_trajectory.py
 │       │   └── launch/
-│       │       ├── mola_slam_launch.py      # 🗺️  FOR MAPPING
-│       │       └── mola_localize_launch.py  # 📍 FOR LOCALIZATION
-│       ├── mola_common/
-│       ├── mola_imu_preintegration/
-│       ├── mola_lidar_odometry/
-│       ├── mola_state_estimation/
-│       ├── mp2p_icp/
-│       └── mrpt_ros_bridge/
+│       │       ├── mola_slam_launch.py    # FOR MAPPING
+│       │       └── mola_localize_launch.py # FOR LOCALIZATION
+│       │
+│       ├── mola_kernel/                   # Virtual interfaces & data types (v2.2.0)
+│       ├── mola_launcher/                 # Module launcher (v2.2.0)
+│       ├── mola_viz/                      # Visualization (v2.2.0)
+│       ├── mola_yaml/                     # YAML configuration (v2.2.0)
+│       ├── mola_msgs/                     # MOLA message types (v2.2.0)
+│       ├── mola_common/                   # Common CMake scripts (v0.5.2)
+│       ├── mola_metric_maps/              # Metric map types (v2.2.0)
+│       ├── mola_pose_list/                # Pose list utilities (v2.2.0)
+│       ├── mola_traj_tools/               # Trajectory tools (v2.2.0)
+│       ├── mola_relocalization/           # Relocalization module (v2.2.0)
+│       ├── mola_bridge_ros2/              # ROS2 bridge (v2.2.0)
+│       │
+│       ├── mola_lidar_odometry/           # LiDAR odometry (v1.2.1)
+│       ├── mola_imu_preintegration/       # IMU preintegration (v1.13.2)
+│       ├── mola_state_estimation/         # State estimation metapackage (v1.11.1)
+│       │   ├── mola_state_estimation_simple/
+│       │   └── mola_state_estimation_smoother/
+│       │
+│       ├── mp2p_icp/                      # Multi-Primitive ICP library (v2.1.0)
+│       │
+│       ├── mola_input_euroc_dataset/      # EuRoC dataset input
+│       ├── mola_input_kitti_dataset/      # KITTI dataset input
+│       ├── mola_input_kitti360_dataset/   # KITTI-360 dataset input
+│       ├── mola_input_mulran_dataset/     # MulRan dataset input
+│       ├── mola_input_paris_luco_dataset/ # Paris Luco dataset input
+│       ├── mola_input_rawlog/             # Rawlog file input
+│       │
+│       ├── mrpt_libros_bridge/            # MRPT-ROS bridge (v2.14.15)
+│       ├── rosbag2rawlog/                 # ROS bag to rawlog converter
+│       ├── kitti_metrics_eval/            # KITTI metrics evaluation
+│       └── mola_demos/                    # Demo configurations
 │
-├── mrpt_msgs-0.5.0/
-│   └── MRPT ROS2 message definitions
+├── gtsam/                             # GTSAM factor graph library (v4.2.0)
 │
-└── mrpt_ros-2.14.16/
-    └── MRPT library wrappers for ROS2
+├── mrpt_msgs-0.5.0/                   # MRPT ROS2 message definitions
+│
+├── mrpt_navigation/                   # MRPT navigation stack (v2.3.0)
+│   ├── mrpt_pf_localization/          # Particle filter localization
+│   ├── mrpt_reactivenav2d/            # Reactive 2D navigation
+│   ├── mrpt_map_server/               # Map server
+│   ├── mrpt_pointcloud_pipeline/      # Point cloud processing
+│   ├── mrpt_tps_astar_planner/        # TPS A* path planner
+│   ├── mrpt_nav_interfaces/           # Navigation interfaces
+│   ├── mrpt_msgs_bridge/              # Message bridge
+│   └── mrpt_tutorials/                # Tutorial packages
+│
+├── mrpt_path_planning/                # MRPT path planning library (v0.2.3)
+│
+├── mrpt_ros-2.14.16/                  # MRPT ROS2 libraries
+│   ├── mrpt_libbase/                  # Core libraries
+│   ├── mrpt_libmath/                  # Math libraries
+│   ├── mrpt_libposes/                 # Pose representations
+│   ├── mrpt_libmaps/                  # Map data structures
+│   ├── mrpt_libobs/                   # Observation types
+│   ├── mrpt_libslam/                  # SLAM algorithms
+│   ├── mrpt_libnav/                   # Navigation
+│   ├── mrpt_libopengl/                # OpenGL rendering
+│   ├── mrpt_libgui/                   # GUI widgets
+│   ├── mrpt_libhwdrivers/             # Hardware drivers
+│   └── mrpt_apps/                     # MRPT applications
+│
+└── pose_cov_ops/                      # Pose covariance operations (v0.4.0)
 ```
 
 All dependencies are pre-configured and version-locked for compatibility.
@@ -2396,9 +2519,20 @@ MOLA SLAM is licensed under BSD-3-Clause. See individual packages for details.
 
 ---
 
-**Version:** 1.7  
-**MOLA Version:** v2.2.1  
-**MRPT Version:** 2.14.16  
-**mrpt_msgs Version:** 0.5.0  
-**Last Updated:** December 2024  
+**Version:** 1.8
+**All packages built from source**
+
+| Package | Version |
+|---------|---------|
+| MOLA | v2.2.0 |
+| GTSAM | v4.2.0 |
+| MRPT | v2.14.16 |
+| mrpt_msgs | v0.5.0 |
+| mola_lidar_odometry | v1.2.1 |
+| mp2p_icp | v2.1.0 |
+| mrpt_navigation | v2.3.0 |
+| mrpt_path_planning | v0.2.3 |
+| pose_cov_ops | v0.4.0 |
+
+**Last Updated:** December 2025
 **Workspace:** `~/mola_ws`

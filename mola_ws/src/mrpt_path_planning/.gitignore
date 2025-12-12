@@ -1,0 +1,17 @@
+build*
+CMakeLists.txt.*
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+doc/build
+doc/mainpage.md
+doc/source/mainpage.md
+doc/html
+.vscode
+ReacNavGrid_*.dat.gz

@@ -1,0 +1,151 @@
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package pose_cov_ops
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+0.4.0 (2025-07-07)
+------------------
+* Update copyright year
+* FIX: Build error against latest tf2
+* README: Update EOL distros
+* Better integration with colcon and clang-tidy
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.14 (2025-05-28)
+-------------------
+* Update README with Kilted badges
+* Fix: Remove usage of obsolete ament_target_dependencies()
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.13 (2024-10-26)
+-------------------
+* Update README.md to add links to example ROS1/ROS2 packages.
+* FIX: Missing CMake export symbol for ROS1
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.12 (2024-08-27)
+-------------------
+* Depend on new mrpt_lib packages (deprecate mrpt2)
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.11 (2023-09-18)
+-------------------
+* Fix ROS 1 warning: catkin_add_gtest() should be inside CATKIN_ENABLE_TESTING
+* Fix typos
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.10 (2023-04-07)
+-------------------
+* Fix installation of headers for ROS 1
+* Contributors: Jose Luis Blanco Claraco
+
+0.3.9 (2023-04-01)
+------------------
+* Merge pull request `#12 <https://github.com/mrpt-ros-pkg/pose_cov_ops/issues/12>`_ from roncapat/patch-1
+  Fix build issues with ROS2
+* Update README.md: fix badge table
+* Contributors: Jose Luis Blanco-Claraco, Patrick Roncagliolo
+
+0.3.8 (2022-09-06)
+------------------
+* Add compose() and inverseCompose() versions for tf2::Transform
+* Contributors: Jose Luis Blanco Claraco
+
+0.3.7 (2022-06-24)
+------------------
+* Remove duplicated entry in package.xml
+* Offer an C++ API with return-by-value semantics.
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.6 (2022-06-12)
+------------------
+* fix package.xml build_type for ros1/ros2
+* Contributors: Jose Luis Blanco Claraco
+
+0.3.5 (2022-06-10)
+------------------
+* Remove find_package() calls due to wrong mrpt-ros2bridge-config.cmake in older mrpt2 versions
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.4 (2022-05-31)
+------------------
+* Fix missing cmake xmllint at configure time.
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.3 (2022-05-30)
+------------------
+* Fix build for ros2
+* Rename license as "LICENSE"
+* Add contributing.md file
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.2 (2022-05-10)
+------------------
+* Unify ros1/ros2 build system in one single git branch.
+* Port to mrpt2, avoid dependency on pkg mrpt_bridge
+* Contributors: Jose Luis Blanco Claraco
+
+0.3.1 (2022-05-04)
+------------------
+* Add License file
+* remove wrong xml comment reference to mrpt1
+* remove travis CI
+* Update README.md
+* Contributors: Jose Luis Blanco-Claraco
+
+0.3.0 (2022-03-04)
+------------------
+* Update URLs to https
+* Update build dep to mrpt2
+* update to mrpt2
+* add basic unit test
+* Set message to status again instead of warning
+* Updating CMakeLists.txt to pass build on Ubuntu 16.04LTS with CMake 3.5 with the latest version of MRPT
+* Add ros build farm badgets and links
+* Contributors: Inounx, Jose Luis Blanco-Claraco, Julian Lopez Velasquez
+
+0.2.1 (2018-05-21)
+------------------
+* fix catkin_lint issues
+* Contributors: Jose Luis Blanco Claraco
+
+0.2.0 (2018-01-09)
+------------------
+* Made compatible with MRPT 1.x and 2.x
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.7 (2017-12-09)
+------------------
+* relaxing need to find lib mrpt >=1.5
+* Silent GCC warnings with Eigen hdrs
+* Contributors: Jose Luis Blanco Claraco
+
+0.1.6 (2017-12-04)
+------------------
+* Fix catkin dependencies
+* Use C++14
+* Fix build against MRPT 1.5 and 2.0
+* Contributors: Javier G. Monroy, Jose Luis Blanco Claraco, Jose Luis Blanco-Claraco
+
+0.1.5 (2014-12-23)
+------------------
+
+0.1.4 (2014-12-23)
+------------------
+* Ported from old repository in mrpt_navigation
+
+0.1.3 (2014-12-18)
+------------------
+* Fix many missing install files
+* Contributors: Jose Luis Blanco
+
+0.1.2 (2014-12-18)
+------------------
+
+0.1.1 (2014-12-17)
+------------------
+* First public binary release.
+
+0.1.0 (2014-12-17)
+------------------
+* consistent version numbers
+* Fixed: pose_cov_ops needs export section in manifest
