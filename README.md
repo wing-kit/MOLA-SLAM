@@ -11,13 +11,39 @@
 ![mrpt_msgs](https://img.shields.io/badge/mrpt__msgs-0.5.0-FF6F00?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-BSD--3-blue?style=for-the-badge)
 
-**Primary Hardware:** Livox MID-360 LiDAR  
-**Focus:** GICP/ICP SLAM for Mapping and Localization  
+**Primary Hardware:** Livox MID-360 LiDAR
+**Focus:** GICP/ICP SLAM for Mapping and Localization
 **Official Documentation:** https://docs.mola-slam.org/latest/
 </div>
 
+---
+
+## Video Showcase
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://youtu.be/Iv2-noh69lY">
+        <img src="https://img.youtube.com/vi/Iv2-noh69lY/maxresdefault.jpg" alt="Localization Demo" width="300">
+      </a>
+      <br>
+      <strong>Localization via MOLA-LO</strong>
+    </td>
+    <td align="center">
+      <a href="https://youtu.be/441KLE3GS2M">
+        <img src="https://img.youtube.com/vi/441KLE3GS2M/maxresdefault.jpg" alt="Mapping Demo" width="300">
+      </a>
+      <br>
+      <strong>Mapping with Livox MID-360</strong>
+    </td>
+  </tr>
+</table>
+
+---
+
 ## Table of Contents
 
+- [Video Showcase](#video-showcase)
 - [Installation](#installation)
   - [Quick Installation](#quick-installation)
 - [Quick Start](#quick-start)
@@ -909,6 +935,9 @@ sliding_window_length: 3.0
 enforce_planar_motion: false
 ```
 
+**Runtime Toggle via GUI:**
+The planar motion constraint can be toggled at runtime using the trajectory visualization GUI (`plot_lidar_trajectory.py`). Click "Enable Planar Mode" or "Disable Planar Mode" buttons to change the constraint without restarting MOLA. This is useful when transitioning between flat terrain and slopes during operation.
+
 ---
 
 ## ROS2 Topics and Transforms
@@ -1779,12 +1808,13 @@ parameters=[{
 - Automatically activates MOLA localization mode
 - Supports arbitrary 6-DOF pose (X, Y, Z, Yaw, Pitch, Roll)
 
-**Planar Motion Control:**
-- Runtime toggle of planar motion constraint
+**Planar Motion Control (Runtime Toggle):**
+- Runtime toggle of planar motion constraint via GUI buttons
 - Enable for flat ground robots (constrains Z, pitch, roll to zero)
 - Disable for 3D motion, uneven terrain, or slopes
-- Uses MOLA runtime parameter service
-- Buttons in GUI for easy control
+- Uses MOLA runtime parameter service (`/mola_runtime_param_set`)
+- Works with both StateEstimationSmoother and StateEstimationSimple
+- Changes take effect immediately without restarting MOLA
 
 **MOLA Activation (for localization):**
 - One-click MOLA activation from idle state
@@ -1878,10 +1908,12 @@ The GUI window provides three main sections:
 - Returns success status
 
 **set_enforce_planar_motion(enable: bool):**
-- Updates state estimator constraint via service
-- Works with both Smoother and Simple estimators
-- Called by GUI buttons
-- Returns success/failure status
+- Updates state estimator constraint via `/mola_runtime_param_set` service
+- Sends YAML parameter update to the state estimator module
+- Tries StateEstimationSimple first, then StateEstimationSmoother
+- Uses full module instance name format: `classname:label`
+- Called by GUI buttons ("Enable Planar Mode" / "Disable Planar Mode")
+- Returns success/failure status with console feedback
 
 #### Technical Details
 
@@ -2339,16 +2371,19 @@ ros2 topic info /livox/lidar_filtered
     ```
 
 13. **Enable planar mode for ground robots:**
-    ```python
-    # In GUI or via service
+    ```bash
+    # In trajectory GUI: Click "Enable Planar Mode" button
+    # Or set in YAML config: enforce_planar_motion: true
     # Constrains Z, pitch, roll to zero
     # Improves accuracy for flat terrain
     ```
 
 14. **Disable planar mode for 3D motion:**
-    ```python
-    # In GUI: Click "Disable Planar Mode"
+    ```bash
+    # In trajectory GUI: Click "Disable Planar Mode" button
+    # Or set in YAML config: enforce_planar_motion: false
     # For robots on slopes, stairs, or flying
+    # Can be toggled at runtime without restarting MOLA
     ```
 
 15. **Name maps descriptively:**

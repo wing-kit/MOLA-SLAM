@@ -375,4 +375,22 @@ std::optional<mrpt::math::TTwist3D> StateEstimationSimple::get_last_twist() cons
     return state_.last_twist;
 }
 
+void StateEstimationSimple::onParameterUpdate(const mrpt::containers::yaml& names_values)
+{
+    if (names_values.isNullNode() || names_values.empty()) return;
+
+    ASSERT_(names_values.isMap());
+
+    auto lck = std::scoped_lock(state_mtx_);
+
+    // Update enforce_planar_motion if provided
+    if (names_values.has("enforce_planar_motion"))
+    {
+        params.enforce_planar_motion = names_values["enforce_planar_motion"].as<bool>();
+        MRPT_LOG_INFO_STREAM(
+            "Runtime parameter update: enforce_planar_motion = "
+            << (params.enforce_planar_motion ? "true" : "false"));
+    }
+}
+
 }  // namespace mola::state_estimation_simple

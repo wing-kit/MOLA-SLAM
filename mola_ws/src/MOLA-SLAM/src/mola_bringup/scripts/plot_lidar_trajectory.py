@@ -162,23 +162,25 @@ class TrajectoryPlotter(Node):
     
     def set_enforce_planar_motion(self, enable):
         """Enable or disable planar motion constraint"""
-        # Try both possible module names for state estimator
-        param = f"state_estimation:\n  enforce_planar_motion: {str(enable).lower()}\n"
-        
-        if self.set_mola_parameter(param):
+        # Module instance name format is: classname:label
+        # Try StateEstimationSimple first (default), then StateEstimationSmoother
+
+        # Try StateEstimationSimple
+        param_simple = f"mola::state_estimation_simple::StateEstimationSimple:state_estimation:\n  enforce_planar_motion: {str(enable).lower()}\n"
+        if self.set_mola_parameter(param_simple):
             state = "enabled" if enable else "disabled"
-            self.get_logger().info(f"✓ Planar motion constraint {state}")
+            self.get_logger().info(f"✓ Planar motion constraint {state} (StateEstimationSimple)")
             return True
-        else:
-            # Try alternative module name
-            param_alt = f"mola::StateEstimationSimple:state_estimation:\n  enforce_planar_motion: {str(enable).lower()}\n"
-            if self.set_mola_parameter(param_alt):
-                state = "enabled" if enable else "disabled"
-                self.get_logger().info(f"✓ Planar motion constraint {state}")
-                return True
-            else:
-                self.get_logger().warn("Failed to set planar motion constraint")
-                return False
+
+        # Try StateEstimationSmoother
+        param_smoother = f"mola::state_estimation_smoother::StateEstimationSmoother:state_estimation:\n  enforce_planar_motion: {str(enable).lower()}\n"
+        if self.set_mola_parameter(param_smoother):
+            state = "enabled" if enable else "disabled"
+            self.get_logger().info(f"✓ Planar motion constraint {state} (StateEstimationSmoother)")
+            return True
+
+        self.get_logger().warn("Failed to set planar motion constraint - state estimator module not found")
+        return False
     
     def publish_initial_pose(self, x, y, z, yaw_degrees):
         """Publish initial pose for localization and activate MOLA"""

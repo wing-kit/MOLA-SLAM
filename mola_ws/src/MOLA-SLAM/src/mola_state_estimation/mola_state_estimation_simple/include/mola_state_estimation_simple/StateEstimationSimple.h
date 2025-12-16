@@ -128,6 +128,9 @@ class StateEstimationSimple : public mola::NavStateFilter
     void onNewObservation(const mrpt::obs::CObservation::ConstPtr& o) override;
 #endif
 
+    // Runtime parameter update support
+    void onParameterUpdate(const mrpt::containers::yaml& names_values) override;
+
    private:
     struct State
     {

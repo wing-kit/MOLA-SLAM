@@ -163,6 +163,9 @@ class StateEstimationSmoother : public mola::NavStateFilter, public mola::Locali
     void onNewObservation(const mrpt::obs::CObservation::ConstPtr& o) override;
 #endif
 
+    // Runtime parameter update support
+    void onParameterUpdate(const mrpt::containers::yaml& names_values) override;
+
    private:
     // everything related to gtsam is hidden in the public API via pimpl
     struct GtsamImpl;
