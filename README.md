@@ -184,6 +184,8 @@ source ~/.bashrc
 
 The workspace includes pre-configured MRPT packages (v2.14.16) and messages (v0.5.0) to build from source.
 
+**⚠️ IMPORTANT:** Do NOT install `ros-humble-mrpt-*` packages from apt! The workspace includes MRPT source code and will build it from source. Installing both will cause conflicts.
+
 Install all required system dependencies:
 
 ```bash
@@ -2404,6 +2406,7 @@ ros2 topic info /livox/lidar_filtered
 ### Build & Dependencies
 - **MRPT Built from Source:** This workspace includes MRPT (v2.14.16) and mrpt_msgs (v0.5.0) to build from source
 - **GTSAM Built from Source:** GTSAM factor graph library is included in the workspace (do NOT install libgtsam-dev from apt)
+- **DO NOT install ros-humble-mrpt-\* from apt:** Installing both source and apt versions will cause conflicts
 - **75+ Dependencies Required:** Use the complete dependency install command in the Installation section
 - **ROS2 Must Be Sourced:** Run `source /opt/ros/humble/setup.bash` before building
 - **Build Order Critical:** Always build: gtsam → mrpt_msgs → mrpt_libs → mola packages → mola_bringup
