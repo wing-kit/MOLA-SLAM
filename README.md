@@ -141,10 +141,11 @@ sudo apt install -y \
   ros-humble-cv-bridge \
   ros-humble-rosbag2-cpp \
   ros-humble-rosbag2-storage \
+  freeglut3-dev \
   ros-humble-rviz2
 
 # 4. Build the workspace
-colcon build --symlink-install --cmake-args -DGTSAM_USE_SYSTEM_EIGEN=ON -DCMAKE_BUILD_TYPE=Release
+colcon build --parallel-worker 4 --symlink-install --cmake-args -DGTSAM_USE_SYSTEM_EIGEN=ON -DCMAKE_BUILD_TYPE=Release
 
 # 5. Source the workspace
 source install/setup.bash
