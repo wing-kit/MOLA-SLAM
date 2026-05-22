@@ -83,6 +83,9 @@ cd MOLA-SLAM/mola_ws
 
 # 3. Install all dependencies
 sudo apt update
+
+sudo apt remove -y ros-humble-mrpt-*
+
 sudo apt install -y \
   build-essential cmake pkg-config \
   python3-colcon-common-extensions \
@@ -192,6 +195,8 @@ Install all required system dependencies:
 ```bash
 # Update package list
 sudo apt update
+
+sudo apt remove -y ros-humble-mrpt-*
 
 # Install ALL dependencies in one command
 sudo apt install -y \
